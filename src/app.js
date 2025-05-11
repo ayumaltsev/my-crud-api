@@ -2,7 +2,10 @@ const http = require('http');
 const {v4: uuidv4, validate: isUUID} = require('uuid');
 const User = require('./model/user');
 const InMemoryUsersDb = require('./db/inMemoryUsersDb');
-require('dotenv').config({path: './config/application.env'});
+
+const dotenv = require('dotenv');
+const envFile = process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev";
+dotenv.config({ path: envFile });
 
 const db = new InMemoryUsersDb();
 

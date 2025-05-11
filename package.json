@@ -4,13 +4,22 @@
   "description": "simple crud app",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/app.js"
+    "start": "nodemon src/app.js",
+    "start:dev": "cross-env NODE_ENV=development nodemon src/app.js",
+    "start:prod": "cross-env NODE_ENV=production npm run build && node dist/app.js",
+    "build": "webpack"
   },
   "author": "Anton Maltsev",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.5.0",
-    "nodemon": "^3.1.10",
     "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "node-polyfill-webpack-plugin": "^4.1.0",
+    "nodemon": "^3.1.10",
+    "webpack": "^5.99.8",
+    "webpack-cli": "^6.0.1"
   }
 }
