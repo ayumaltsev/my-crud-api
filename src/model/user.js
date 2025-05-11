@@ -18,3 +18,5 @@ class User {
         this.hobbies = hobbies;
     }
 }
+
+module.exports = User;
