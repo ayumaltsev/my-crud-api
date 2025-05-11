@@ -7,6 +7,7 @@ const db = new InMemoryUsersDb();
 
 const invalidUserIdMessage = 'UserId is invalid (not uuid)!';
 const notFoundUserMessage = 'User not found';
+const foundAndDeletedMessage = 'Found and deleted';
 
 const server = http.createServer((req, res) => {
 
@@ -38,7 +39,27 @@ const server = http.createServer((req, res) => {
             res.end(JSON.stringify({error: notFoundUserMessage}));
             return;
         }
+    }
 
+    if (url.startsWith("/api/users/") && method === "DELETE") {
+        const userId = url.split("/")[3];
+
+        if (!isUUID(userId)) {
+            res.writeHead(400, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify({error: invalidUserIdMessage}));
+            return;
+        }
+
+        try {
+            db.remove(userId);
+            res.writeHead(204, {'Content-Type': 'application/json'});
+            res.end();
+            return;
+        } catch (error) {
+            res.writeHead(404, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify({error: notFoundUserMessage}));
+            return;
+        }
     }
 
     res.writeHead(404, {'Content-Type': 'application/json'});

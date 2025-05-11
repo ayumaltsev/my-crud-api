@@ -30,8 +30,8 @@ class InMemoryUsersDb {
         this.#users.push(user);
     }
 
-    remove(user) {
-        const index = this.#users.findIndex(currentUser => currentUser.id === user.id);
+    remove(id) {
+        const index = this.#users.findIndex(currentUser => currentUser.id === id);
         if (index !== -1) {
             this.#users.splice(index, 1);
         } else {
