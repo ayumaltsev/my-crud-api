@@ -2,6 +2,7 @@ const http = require('http');
 const {v4: uuidv4, validate: isUUID} = require('uuid');
 const User = require('./model/user');
 const InMemoryUsersDb = require('./db/inMemoryUsersDb');
+require('dotenv').config({path: './config/application.env'});
 
 const db = new InMemoryUsersDb();
 
@@ -94,7 +95,6 @@ const server = http.createServer((req, res) => {
             return;
         }
 
-
         if (url.startsWith("/api/users/") && method === "PUT") {
             const userId = url.split("/")[3];
             let body = '';
@@ -143,7 +143,7 @@ const server = http.createServer((req, res) => {
     }
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3333;
 server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });

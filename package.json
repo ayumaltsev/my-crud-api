@@ -9,6 +9,7 @@
   "author": "Anton Maltsev",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.5.0",
     "nodemon": "^3.1.10",
     "uuid": "^11.1.0"
   }
