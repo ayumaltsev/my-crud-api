@@ -92,6 +92,45 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+
+    if (url.startsWith("/api/users/") && method === "PUT") {
+        const userId = url.split("/")[3];
+        let body = '';
+
+        if (!isUUID(userId)) {
+            res.writeHead(400, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify({error: invalidUserIdMessage}));
+            return;
+        }
+
+        req.on('data', chunk => {
+            body += chunk;
+        });
+
+        req.on('end', () => {
+            try {
+                const {username, age, hobbies} = JSON.parse(body);
+
+                if (!username || typeof username !== 'string' || username.trim() === ''
+                    || !Number.isInteger(age) || Number(age) < 0
+                    || !Array.isArray(hobbies)) {
+                    throw new Error(invalidUserInfoMessage);
+                }
+
+                const updatedUser = {id: userId, username, age, hobbies};
+                db.update(updatedUser);
+                res.writeHead(200, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify(updatedUser));
+
+            } catch (error) {
+                res.writeHead(400, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({error: error.message}));
+            }
+        });
+
+        return;
+    }
+
     res.writeHead(404, {'Content-Type': 'application/json'});
     res.end(JSON.stringify({error: "Route not found"}));
 });
