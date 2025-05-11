@@ -7,14 +7,14 @@ const db = new InMemoryUsersDb();
 
 const invalidUserIdMessage = 'UserId is invalid (not uuid)!';
 const notFoundUserMessage = 'User not found';
-const foundAndDeletedMessage = 'Found and deleted';
+const invalidUserInfoMessage = 'Invalid user data: username (non-empty string), age>0 (number), hobbies (array) are required';
 
 const server = http.createServer((req, res) => {
 
     const method = req.method;
     const url = req.url;
 
-    if (url === "/api/users" && method === "GET") {
+    if ((url === "/api/users" || url === "/api/users/") && method === "GET") {
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(JSON.stringify(db.findAll()));
         return;
@@ -60,6 +60,36 @@ const server = http.createServer((req, res) => {
             res.end(JSON.stringify({error: notFoundUserMessage}));
             return;
         }
+    }
+
+    if ((url === "/api/users" || url === "/api/users/") && method === "POST") {
+        let body = '';
+
+        req.on('data', chunk => {
+            body += chunk;
+        });
+
+        req.on('end', () => {
+            try {
+                const {username, age, hobbies} = JSON.parse(body);
+
+                if (!username || typeof username !== 'string' || username.trim() === ''
+                    || !Number.isInteger(age) || Number(age) < 0
+                    || !Array.isArray(hobbies)) {
+                    throw new Error(invalidUserInfoMessage);
+                }
+
+                const newUser = {id: uuidv4(), username, age, hobbies};
+                db.save(newUser);
+                res.writeHead(201, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify(newUser));
+            } catch (error) {
+                res.writeHead(400, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({error: error.message}));
+            }
+        });
+
+        return;
     }
 
     res.writeHead(404, {'Content-Type': 'application/json'});
